@@ -1,70 +1,24 @@
-# Getting Started with Create React App
+Теперь, независимо от того, какое поле ввода вы редактируете, this.state.temperature и this.state.scale в Calculator обновляются. Одно из полей ввода получает значение как есть, поэтому введённые пользователем данные сохраняются, а значение другого поля ввода всегда пересчитывается на их основе.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Давайте посмотрим, что происходит, когда вы редактируете поле ввода:
 
-## Available Scripts
+React вызывает функцию, указанную в onChange на DOM-элементе <input>. В нашем случае это метод handleChange() компонента TemperatureInput.
+Метод handleChange() в компоненте TemperatureInput вызывает this.props.onTemperatureChange() с новым требуемым значением. Его пропсы, включая onTemperatureChange, были предоставлены его родительским компонентом — Calculator.
+Когда Calculator рендерился ранее, он указал, что onTemperatureChange в компоненте TemperatureInput по шкале Цельсия — это метод handleCelsiusChange в компоненте Calculator, а onTemperatureChange компонента TemperatureInput по шкале Фаренгейта — это метод handleFahrenheitChange в компоненте Calculator. Поэтому один из этих двух методов Calculator вызывается в зависимости от того, какое поле ввода редактируется.
+Внутри этих методов компонент Calculator указывает React сделать повторный рендер себя, используя вызов this.setState() со значением нового поля ввода и текущей шкалой.
+React вызывает метод render() компонента Calculator, чтобы узнать, как должен выглядеть UI. Значения обоих полей ввода пересчитываются исходя из текущей температуры и шкалы. В этом методе выполняется конвертация температуры.
+React вызывает методы render() конкретных компонентов TemperatureInput с их новыми пропсами, переданными компонентом Calculator. Он узнает, как должен выглядеть UI.
+React вызывает метод render() компонента Boiling Verdict, передавая температуру в градусах Цельсия как проп.
+React DOM обновляет DOM, чтобы привести его в соответствие с нужными нам значениями в полях ввода. Отредактированное нами только что поле ввода получает его текущее значение, а другое поле ввода обновляется конвертированным значением температуры.
+Каждое обновление проходит через одни и те же шаги, поэтому поля ввода остаются синхронизированными.
 
-In the project directory, you can run:
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Извлечённые уроки
+Для любых изменяемых данных в React-приложении должен быть один «источник истины». Обычно состояние сначала добавляется к компоненту, которому оно требуется для рендера. Затем, если другие компоненты также нуждаются в нём, вы можете поднять его до ближайшего общего предка. Вместо того, чтобы пытаться синхронизировать состояние между различными компонентами, вы должны полагаться на однонаправленный поток данных.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Для подъёма состояния приходится писать больше «шаблонного» кода, чем при подходах с двусторонней привязкой данных, но мы получаем преимущество в виде меньших затрат на поиск и изолирование багов. Так как любое состояние «живёт» в каком-нибудь компоненте, и только этот компонент может его изменить, количество мест с возможными багами значительно уменьшается. Кроме того, вы можете реализовать любую пользовательскую логику для отклонения или преобразования данных, введённых пользователем.
 
-### `npm test`
+Если что-то может быть вычислено из пропсов или из состояния, то скорее всего оно не должно находиться в состоянии. Например, вместо сохранения celsiusValue и fahrenheitValue, мы сохраняем только последнюю введённую температуру (temperature) и её шкалу (scale). Значение другого поля ввода можно всегда вычислить из них в методе render(). Это позволяет очистить или применить округление к значению другого поля, не теряя при этом точности значений, введённых пользователем.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Когда вы видите, что в UI что-то отображается неправильно, то можете воспользоваться расширением React Developer Tools. С помощью него можно проверить пропсы и перемещаться по дереву компонентов вверх до тех пор, пока не найдёте тот компонент, который отвечает за обновление состояния. Это позволяет отследить источник багов:
